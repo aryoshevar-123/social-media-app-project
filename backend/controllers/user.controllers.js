@@ -36,19 +36,15 @@ export const followUnfollowUser = async (req, res) => {
         const isFollowing = currentUser.following.includes(id);
 
         if (isFollowing) {
-            //unfollow user
             await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
             await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
             
-            //TODO return the user id as a response
             res.status(200).json({ message: "User unfollowed successfully" });
         }
         else {
-            //follow user
             await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
             await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
 
-            //send notification to user
             const newNotification = new Notification({
                 type: 'follow',
                 from: req.user._id,
@@ -57,7 +53,6 @@ export const followUnfollowUser = async (req, res) => {
 
             await newNotification.save();
 
-            //TODO return the user id as a response
             res.status(200).json({ message: "User followed successfully" });
         }
     } catch (error) {
@@ -93,7 +88,7 @@ function takeImgId(imgLink) {
     if (!imgLink) {
         return imgLink;
     }
-    const imgId = imgLink.split("/").pop().split("."[0]);
+    const imgId = imgLink.split("/").pop().split(".")[0];
     return imgId;
 }
 
@@ -102,13 +97,6 @@ export const updateUser = async (req, res) => {
     let { profileImg, coverImg } = req.body;
 
     const userId = req.user._id;
-
-    // if (user.profileImg) {
-    //     const profileImgId = user.profileImg.split("/").pop().split(".")[0];
-    // }
-    // if (user.coverImg) {
-    //     const coverImgId = user.coverImg.split("/").pop().split(".")[0];
-    // }
 
     try {
         let user = await User.findById(userId);
@@ -141,13 +129,15 @@ export const updateUser = async (req, res) => {
                 return res.status(400).json({ error: "Invalid email format" });
             } 
             const existingEmail = await User.findOne({ email });
-            if (existingEmail) {
+            const isMyEmail = email === user.email;
+            if (existingEmail && !isMyEmail) {
                 return res.status(400).json({ error: "Email is already taken" });
-            }
+            } 
         }
         
         const existingUser = await User.findOne({ username });
-        if (existingUser) {
+        const isMyUsername = username === user.username;
+        if (existingUser && !isMyUsername) {
             return res.status(400).json({ error: "Username is already taken" });
         }
 
