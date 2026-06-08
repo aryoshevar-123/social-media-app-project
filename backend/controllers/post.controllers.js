@@ -134,11 +134,17 @@ export const likeUnlikePost = async (req, res) => {
 
 export const getPost = async (req,res) => {
     try {
-        const post = await Post.findById(req.params.id);
+        const post = await Post.findById(req.params.id).populate({
+            path: "user",
+            select: "-password",
+        }).populate({
+            path: "comments.user",
+            select: "-password",
+        });
         if (!post) {
             return res.status(404).json({ error: "Post not found" });
         }
-        
+
         res.status(200).json(post);
     } catch (error) {
         console.log ("Error in getPost controller:", error);

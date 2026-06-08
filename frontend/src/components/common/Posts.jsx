@@ -23,7 +23,7 @@ const Posts = ({ feedType, username, userId }) => {
 	const POST_ENDPOINT = getPostEndPoint();
 
 	const {data:posts, isLoading, refetch, isRefetching} = useQuery({
-		queryKey: ["posts"],
+		queryKey: ["posts", feedType],
 		queryFn: async () => {
 			try {
 				const res = await fetch(POST_ENDPOINT);
@@ -35,7 +35,7 @@ const Posts = ({ feedType, username, userId }) => {
 
 				return data;
 			} catch (error) {
-				
+				throw new Error(error.message || error);
 			}
 		}
 	})
