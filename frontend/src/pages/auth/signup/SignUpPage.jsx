@@ -1,11 +1,15 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 
+import SocialyFullLogoSvg from '../../../components/svgs/SocialyFullLogo';
+
 import { MdEmail } from "react-icons/md";
 import { FaRegUser } from "react-icons/fa";
 import { FaKey } from "react-icons/fa";
 import { MdDriveFileRenameOutline } from "react-icons/md";
 import { useMutation } from '@tanstack/react-query';
+import { FaRegEyeSlash } from "react-icons/fa";
+import { FaRegEye } from "react-icons/fa";
 
 import toast from 'react-hot-toast';
 
@@ -16,6 +20,8 @@ const SignUpPage = () => {
         fullName: "",
         password: "",
     });
+    const [emailError, setEmailError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const { 
         mutate:signUp, 
@@ -47,19 +53,38 @@ const SignUpPage = () => {
         },
     });
 
+    const validateEmail = (emailValue) => {
+        if(!emailValue) {
+            setEmailError("");
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!emailRegex.test(emailValue)) {
+            setEmailError("Email format is incorrect");
+        }
+        else {
+            setEmailError("");
+        }
+    }
+
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
         signUp(formData)
     };
 
     const handleInputChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+
+        if (name === "email") {
+            validateEmail(value);
+        }
     };
   
     return (
         <div className='max-w-screen-xl mx-auto flex h-screen px-10'>
             <div className='flex-1 hidden lg:flex items-center justify-center'>
-                <h1 className='text-6xl font-extrabold dark:text-white'>FAKE TWITTER</h1>
+                <SocialyFullLogoSvg className='lg:w-3/3 font-black dark:fill-white' />
             </div>
             <div className='flex-1 flex flex-col justify-center items-center'>
                 <form className='lg:w-2/3 mx-auto md:mx-20 flex gap-4 flex-col' onSubmit=
@@ -76,17 +101,25 @@ const SignUpPage = () => {
                             value={formData.username}
                         />
                     </label>
-                    <label className='input input-bordered rounded flex items-center gap-2'>
-                        <MdEmail/>
-                        <input 
-                            type="email"
-                            className='grow'
-                            placeholder='Email'
-                            name='email'
-                            onChange={handleInputChange}
-                            value={formData.email}
-                        />
-                    </label>
+                    <div>
+                        <label className={`input input-bordered rounded flex items-center gap-2 ${emailError ? 'input-error border-red-500' : ''}`}>
+                            <MdEmail className={emailError ? 'text-red-500' : ''}/>
+                            <input 
+                                type="text"
+                                className='grow'
+                                placeholder='Email'
+                                name='email'
+                                onChange={handleInputChange}
+                                value={formData.email}
+                            />
+                        </label>
+                        {emailError && (
+                            <span className="text-red-500 text-xs pl-1 transition-all duration-200 animate-fadeIn">
+                                {emailError}
+                            </span>
+                        )}
+                    </div>
+                    
                     <label className='input input-bordered rounded flex items-center gap-2'>
                         <MdDriveFileRenameOutline />
                         <input 
@@ -101,13 +134,19 @@ const SignUpPage = () => {
                     <label className='input input-bordered rounded flex items-center gap-2'>
                         <FaKey/>
                         <input 
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             className='grow'
                             placeholder='Password'
                             name='password'
                             onChange={handleInputChange}
                             value={formData.password}
                         />
+                        <div 
+                            className="absolute right-3 cursor-pointer text-slate-500 hover:text-slate-300 transition-colors duration-200"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <FaRegEye className="w-5 h-5" /> : <FaRegEyeSlash className="w-5 h-5" />}
+                        </div>
                     </label>
                     <button className='btn rounded-full btn-primary text-white'>
                         {isPending ? "Loading..." : "Sign Up"}
