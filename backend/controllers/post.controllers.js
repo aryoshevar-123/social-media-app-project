@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import Post from "../models/post.model.js";
 import Notification from "../models/notification.model.js";
 import { v2 as cloudinary } from "cloudinary";
+import { cloudinaryImgId } from "../lib/utils/cloudinaryImgId.js";
 
 export const createPost = async (req, res) => {
     try {
@@ -50,7 +51,7 @@ export const deletePost = async (req, res) => {
         }
 
         if (post.img) {
-            const imgId = post.img.split("/").pop().split(".")[0];
+            const imgId = cloudinaryImgId(post.img);
             await cloudinary.uploader.destroy(imgId);
         }
 
@@ -127,6 +128,20 @@ export const likeUnlikePost = async (req, res) => {
         }
     } catch (error) {
         console.log("Error in commentOnPost controller:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export const getPost = async (req,res) => {
+    try {
+        const post = await Post.findById(req.params.id);
+        if (!post) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+        
+        res.status(200).json(post);
+    } catch (error) {
+        console.log ("Error in getPost controller:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 }
