@@ -16,7 +16,7 @@ const CommentRow = ({ c }) => {
 
     return (
         <div className='flex gap-3 items-start p-4 border-b border-gray-800 hover:bg-[#16181C] hover:bg-opacity-10 transition duration-200 min-w-0 max-w-full'>
-            <Link to={`/profile/${c.user?.username}`} className='avatar flex-shrink-0'>
+            <Link to={`/profile/${c.user?.username}`} className='avatar shrink-0'>
                 <div className='w-8 rounded-full'>
                     <img src={c.user?.profileImg || "/avatar-placeholder.png"} alt='avatar' />
                 </div>
@@ -24,16 +24,18 @@ const CommentRow = ({ c }) => {
             
             <div className='flex flex-col flex-1 min-w-0 max-w-full overflow-hidden'>
                 <div className='flex items-center gap-2 flex-wrap'>
-                    <Link to={`/profile/${c.user?.username}`} className='font-bold text-sm hover:underline truncate max-w-[150px] md:max-w-xs'>
+                    <Link to={`/profile/${c.user?.username}`} className='font-bold text-sm truncate max-w-37.5 md:max-w-xs'>
                         {c.user?.fullName}
                     </Link>
-                    <span className='text-gray-500 text-sm truncate'>@{c.user?.username}</span>
+                    <span className='text-gray-500 text-sm truncate'>
+                        <Link to={`/profile/${c.user?.username}`}>@{c.user?.username}</Link>
+                    </span>
                 </div>
                 
                 <div className='text-sm mt-1 text-gray-200 min-w-0 max-w-full'>
                     <p 
                         ref = {textRef}
-                        className={`whitespace-pre-wrap break-words break-normal transition-all duration-200 ${
+                        className={`whitespace-pre-wrap wrap-break-word break-normal transition-all duration-200 ${
                         isExpanded ? "" : "line-clamp-3"
                     }`}>
                         {c.text}
