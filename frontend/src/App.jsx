@@ -45,14 +45,17 @@ function App() {
   return (
     <div className="flex max-w-6xl mx-auto">
       {authUser && <Sidebar />}
-      <Routes>
-        <Route path='/' element={authUser ? <HomePage/> : <Navigate to="/login" />}/>
-        <Route path='/login' element={!authUser ? <LoginPage/> : <Navigate to="/" />}/>
-        <Route path='/signup' element={!authUser ? <SignUpPage/> : <Navigate to="/" />}/>
-        <Route path='/notifications' element={authUser ? <NotificationPage/> : <Navigate to="/login" />}/>
-        <Route path='/profile/:username' element={authUser ? <ProfilePage/> : <Navigate to="/login" />}/>
-        <Route path='/post/:id' element={authUser ? <PostPage/> : <Navigate to="/login"/>}/>
-      </Routes>
+      <div className='flex-1 min-w-0 max-w-full overflow-hidden'>
+        <Routes>
+          <Route path='/' element={authUser ? <HomePage/> : <Navigate to="/login" />}/>
+          <Route path='/login' element={!authUser ? <LoginPage/> : <Navigate to="/" />}/>
+          <Route path='/signup' element={!authUser ? <SignUpPage/> : <Navigate to="/" />}/>
+          <Route path='/notifications' element={authUser ? <NotificationPage/> : <Navigate to="/login" />}/>
+          <Route path='/profile/:username' element={authUser ? <ProfilePage/> : <Navigate to="/login" />}/>
+          <Route path='/post/:id' element={authUser ? <PostPage/> : <Navigate to="/login"/>}/>
+        </Routes>
+      </div>
+      
       {authUser && <RightPanel />}
       <Toaster />
     </div>
